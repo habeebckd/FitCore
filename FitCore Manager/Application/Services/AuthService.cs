@@ -1,4 +1,4 @@
-﻿using Application.Dto;
+﻿using Application.Dto.user;
 using AutoMapper;
 using FitCore_Manager.Model;
 using infrastructure.Repository;

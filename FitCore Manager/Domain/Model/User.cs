@@ -1,4 +1,6 @@
-﻿namespace FitCore_Manager.Model
+﻿using Domain.Model;
+
+namespace FitCore_Manager.Model
 {
     public class User
     {
@@ -9,7 +11,8 @@
         public string Phone {  get; set; }
         public string Role { get; set; }
         public bool isBlocked { get; set; }
-
         public DateTime CreatedAt { get; set; }
+
+        public virtual UserMembership UserMembership { get; set; }
     }
 }

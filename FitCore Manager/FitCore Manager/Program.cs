@@ -1,5 +1,8 @@
+using Application.Interface.Reppo.membership;
+using Application.Interface.Serv.membership;
 using Application.Services;
 using AutoMapper;
+using E_Commerce.CustomMiddleweare;
 using infrastructure.Context;
 using infrastructure.Mapper;
 using infrastructure.Repository;
@@ -25,6 +28,12 @@ namespace FitCore_Manager
 
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<IAuthService,AuthService>();
+
+            builder.Services.AddScoped<IMembershipPlanRepository, MembershipPlanRepository>();
+            builder.Services.AddScoped<IAdminMembershipService, AdminMembershipService>();
+
+            builder.Services.AddScoped<IUserMembershipRepository, UserMembershipRepository>();
+            builder.Services.AddScoped<IUserMembershipService,UserMembershipService>();
 
             builder.Services.AddAutoMapper(typeof(ProfileMapper));
 
@@ -122,6 +131,7 @@ namespace FitCore_Manager
 
             app.UseAuthentication(); // Added for JWT
             app.UseAuthorization();
+            app.UseMiddleware<UserIdMiddleware>();
 
             app.MapControllers();
 

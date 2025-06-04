@@ -1,5 +1,7 @@
-﻿using Application.Dto;
+﻿using Application.Dto.MembershipPlan;
+using Application.Dto.user;
 using AutoMapper;
+using Domain.Model;
 using FitCore_Manager.Model;
 using System;
 using System.Collections.Generic;
@@ -15,6 +17,11 @@ namespace infrastructure.Mapper
         {
             CreateMap<User,UserRegistrationDto>().ReverseMap();
             CreateMap<User, UserLoginDto>().ReverseMap();
+
+            CreateMap<CreateMembershipPlanDto, MembershipPlans>().ReverseMap();
+            CreateMap<UpdateMembershipPlanDto, MembershipPlans>().ReverseMap();
+
+            CreateMap<UserMembership,UserMembershipDto>().ReverseMap();
         }
     }
 }

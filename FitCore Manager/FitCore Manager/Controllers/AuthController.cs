@@ -1,4 +1,5 @@
 ﻿using Application.Dto;
+using Application.Dto.user;
 using Application.Services;
 using CloudinaryDotNet.Actions;
 using Microsoft.AspNetCore.Authorization;
@@ -40,7 +41,7 @@ namespace FitCore_Manager.Controllers
 
 
 
-        [HttpPost(" TrinerRegister")]
+        [HttpPost(" TrainerRegister")]
         [Authorize(Roles = "owner")]
         public async Task<IActionResult> TrinerRegister([FromForm] UserRegistrationDto newUser)
         {
