@@ -12,5 +12,7 @@ namespace infrastructure.Repository
         Task<User> GetUserByEmailAsync(string email);
         Task AddUserAsync (User user);
         Task<List<User>> GetAllUsersAsync();
+        Task<User> GetUserByIdAsync(int id);
+        Task UpdateUser (User user);
     }
 }

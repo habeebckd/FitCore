@@ -10,7 +10,7 @@ namespace Application.Dto
     {
         public bool IsSuccess { get; set; }
         public string Message { get; set; }
-        public T Data { get; set; }
+        public T Data { get; set; }                                                 
         public string Error { get; set; }
         public ApiResponse(bool isSuccess, string message, T data, string error)
         {

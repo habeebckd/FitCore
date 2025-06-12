@@ -16,6 +16,8 @@ namespace infrastructure.Context
             public DbSet<User>Users { get; set; }
             public DbSet<UserMembership> UserMembership { get; set; }
             public DbSet<MembershipPlans> membershipPlans {  get; set; }
+            public DbSet<WorkoutPlan> workoutPlans { get; set; }
+            public DbSet<UserWorkoutPlan> userWorkoutPlans{  get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -49,6 +51,17 @@ namespace infrastructure.Context
             modelBuilder.Entity<MembershipPlans>()
                 .Property(p => p.Price)
                 .HasPrecision(10, 2);
+
+            modelBuilder.Entity<UserWorkoutPlan>()
+                .HasOne(a => a.User)
+                .WithMany(a => a.UserWorkoutPlans)
+                .HasForeignKey(a => a.UserId);
+
+            modelBuilder.Entity<UserWorkoutPlan>()
+                .HasOne(a => a.WorkoutPlan)
+                .WithMany(a => a.UserWorkoutPlans)
+                .HasForeignKey(a => a.WorkoutPlanId);
+
         }
     }
 }

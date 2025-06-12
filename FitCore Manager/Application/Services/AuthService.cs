@@ -1,5 +1,8 @@
-﻿using Application.Dto.user;
+﻿using Application.Dto;
+using Application.Dto.user;
+using Application.Interface;
 using AutoMapper;
+using CloudinaryDotNet;
 using FitCore_Manager.Model;
 using infrastructure.Repository;
 using Microsoft.Extensions.Configuration;
@@ -19,12 +22,14 @@ namespace Application.Services
         private readonly IUserRepository _userRepository;
         private readonly IConfiguration _configuration;
         private readonly IMapper _mapper;
+        private readonly ICloudinaryServices _cloudinaryServices;
 
-        public AuthService(IUserRepository userRepository, IConfiguration configuration, IMapper mapper)
+        public AuthService(IUserRepository userRepository, IConfiguration configuration, IMapper mapper,ICloudinaryServices cloudinaryServices)
         {
             _userRepository = userRepository;
             _configuration = configuration;
             _mapper = mapper;
+            _cloudinaryServices = cloudinaryServices;
         }
 
         public async Task<bool> Register(UserRegistrationDto dto)
@@ -167,5 +172,61 @@ namespace Application.Services
         {
             return BCrypt.Net.BCrypt.Verify(password, hash);
         }
+
+
+        public async Task<ApiResponse<UserProfileDto>> GetUserProfile(int userId)
+        {
+            try
+            {
+                var user = await _userRepository.GetUserByIdAsync(userId);
+                if (user == null)
+                    return new ApiResponse<UserProfileDto>(false, "User not found", null, null);
+
+                var dto = new UserProfileDto
+                {
+                    UserName = user.UserName,
+                    Email = user.Email,
+                    Phone = user.Phone,
+                    ImageUrl = user.ImageUrl
+                };
+                return new ApiResponse<UserProfileDto>(true, "Success", dto, null);
+            }
+            catch (Exception ex) 
+            {
+                return new ApiResponse<UserProfileDto>(false, "Error", null, ex.Message);
+            }
+        }
+
+
+
+        public async Task<ApiResponse<string>> UpdateUserProfile(int userId, UpdateUserProfileDto dto)
+        {
+            try
+            {
+                var user = await _userRepository.GetUserByIdAsync(userId);
+                if (user == null)
+                    return new ApiResponse<string>(false, "User not found", null, null);
+
+                user.UserName = !string.IsNullOrWhiteSpace(dto.UserName) ? dto.UserName : user.UserName;
+                user.Phone = !string.IsNullOrWhiteSpace(dto.Phone) ? dto.Phone : user.Phone;
+
+                if (dto.ImageFile != null)
+                {
+                    var imageUrl = await _cloudinaryServices.UploadImageAsync(dto.ImageFile);
+                    user.ImageUrl = imageUrl;
+                }
+
+                await _userRepository.UpdateUser(user);
+                return new ApiResponse<string>(true, "Profile updated", "Done", null);
+            }
+            catch (Exception ex)
+            {
+                return new ApiResponse<string>(false, "Update failed", null, ex.Message);
+            }
+        }
+
+
+
+
     }
 }

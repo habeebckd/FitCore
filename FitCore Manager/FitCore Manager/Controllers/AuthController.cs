@@ -5,6 +5,7 @@ using CloudinaryDotNet.Actions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace FitCore_Manager.Controllers
 {
@@ -94,5 +95,22 @@ namespace FitCore_Manager.Controllers
                 return StatusCode(500, new ApiResponse<string>(false, "Server error", null, ex.Message));
             }
         }
+
+        [HttpGet("userProfile")]
+        public async Task<IActionResult> GetProfile()
+        {
+            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
+            var result = await _authService.GetUserProfile(userId);
+            return result.IsSuccess ? Ok(result) : BadRequest(result);
+        }
+
+        [HttpPatch("profileUpdating")]
+        public async Task<IActionResult> UpdateProfile([FromForm] UpdateUserProfileDto dto)
+        {
+            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
+            var result = await _authService.UpdateUserProfile(userId, dto);
+            return result.IsSuccess ? Ok(result) : BadRequest(result);
+        }
+
     }
 }

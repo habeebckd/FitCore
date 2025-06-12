@@ -127,10 +127,10 @@ namespace Application.Services
             if (!string.IsNullOrWhiteSpace(dto.Description))
                 plan.Description = dto.Description;
 
-            if (dto.Price > 0)
+            if (dto.Price >= 0)
                 plan.Price = dto.Price;
 
-            if (dto.Duration > 0)
+            if (dto.Duration >= 0)
                 plan.Duration = dto.Duration;
 
             await _PlanRepository.UpdatePlanAsync(plan);

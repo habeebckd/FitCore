@@ -1,5 +1,8 @@
+using Application.Interface;
 using Application.Interface.Reppo.membership;
+using Application.Interface.Reppo.Workout;
 using Application.Interface.Serv.membership;
+using Application.Interface.Serv.Workout;
 using Application.Services;
 using AutoMapper;
 using E_Commerce.CustomMiddleweare;
@@ -32,8 +35,16 @@ namespace FitCore_Manager
             builder.Services.AddScoped<IMembershipPlanRepository, MembershipPlanRepository>();
             builder.Services.AddScoped<IAdminMembershipService, AdminMembershipService>();
 
-            builder.Services.AddScoped<IUserMembershipRepository, UserMembershipRepository>();
+            builder.Services.AddScoped < IUserMembershipRepository,UserMembershipRepository>();
             builder.Services.AddScoped<IUserMembershipService,UserMembershipService>();
+
+            builder.Services.AddScoped<IWorkoutPlanRepository, WorkoutPlanRepository>();
+            builder.Services.AddScoped<IWorkoutPlanService, WorkoutPlanService>();
+
+            builder.Services.AddScoped<IUserWorkoutPlanRepository,UserWorkoutPlanRepository>();
+            builder.Services.AddScoped<IUserWorkoutPlanService,UserWorkoutPlanService>();
+
+            builder.Services.AddScoped<ICloudinaryServices, CloudinaryService>();
 
             builder.Services.AddAutoMapper(typeof(ProfileMapper));
 

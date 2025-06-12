@@ -11,8 +11,11 @@ namespace FitCore_Manager.Model
         public string Phone {  get; set; }
         public string Role { get; set; }
         public bool isBlocked { get; set; }
+        public string? ImageUrl { get; set; }
+
         public DateTime CreatedAt { get; set; }
 
         public virtual UserMembership UserMembership { get; set; }
+        public virtual ICollection<UserWorkoutPlan> UserWorkoutPlans { get; set; }              
     }
 }
