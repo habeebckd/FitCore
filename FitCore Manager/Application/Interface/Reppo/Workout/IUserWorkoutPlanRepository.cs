@@ -10,7 +10,7 @@ namespace Application.Interface.Reppo.Workout
 {
     public interface IUserWorkoutPlanRepository
     {
-        Task<WorkoutPlan> GetPlanByGoal(string goal);
+        Task<WorkoutPlan> GetPlanById(int planId);
         Task<UserWorkoutPlan> GetUserAssignedPlan(int userId, int planId);
         Task AddUserWorkoutPlan(UserWorkoutPlan Plan);
         Task<ICollection<WorkoutPlan>> GetAllPlans();

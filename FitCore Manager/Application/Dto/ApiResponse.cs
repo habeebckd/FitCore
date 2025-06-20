@@ -12,7 +12,7 @@ namespace Application.Dto
         public string Message { get; set; }
         public T Data { get; set; }                                                 
         public string Error { get; set; }
-        public ApiResponse(bool isSuccess, string message, T data, string error)
+        public ApiResponse(bool isSuccess, string message, T data , string error)
         {
             IsSuccess = isSuccess;
             Message = message;

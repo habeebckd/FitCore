@@ -11,5 +11,7 @@ namespace Application.Interface.Reppo.membership
     {
         Task <UserMembership> GetActiveMembershipByUserIdAsync(int  userId);
         Task AddUserMembershipAsync(UserMembership Membership);
+
+        Task UpdateUserMembershipAsync(UserMembership membership);
     }
 }

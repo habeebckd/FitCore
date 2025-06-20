@@ -8,7 +8,7 @@ namespace Application.Dto.Workout
 {
     public class AssignWorkoutPlanDto
     {
-        //public int WorkoutPlanId { get; set; }
-        public string Goal {  get; set; }
+        public int WorkoutPlanId { get; set; }
+        //public string Goal {  get; set; }
     }
 }

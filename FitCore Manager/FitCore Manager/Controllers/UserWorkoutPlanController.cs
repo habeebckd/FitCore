@@ -22,10 +22,11 @@ namespace FitCore_Manager.Controllers
         [HttpPost("assign")]
         public async Task<IActionResult> AssignPlan(AssignWorkoutPlanDto dto)
         {
-            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value ?? "0");
-            var response = await _Service.AssignWorkoutPlan(userId, dto.Goal);
+            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
+            var response = await _Service.AssignWorkoutPlan(userId, dto.WorkoutPlanId);
             return response.IsSuccess ? Ok(response) : BadRequest(response);
         }
+
 
 
         [HttpGet("available-plans")]

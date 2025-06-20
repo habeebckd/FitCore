@@ -1,19 +1,33 @@
 using Application.Interface;
+using Application.Interface.Reppo.Attantance;
 using Application.Interface.Reppo.membership;
+using Application.Interface.Reppo.Rating;
+using Application.Interface.Reppo.Trainer;
+
+//using Application.Interface.Reppo.Trainer;
 using Application.Interface.Reppo.Workout;
+using Application.Interface.Serv.Attantance;
 using Application.Interface.Serv.membership;
+using Application.Interface.Serv.Rating;
+using Application.Interface.Serv.Trainer;
+
+//using Application.Interface.Serv.Trainer;
 using Application.Interface.Serv.Workout;
 using Application.Services;
 using AutoMapper;
 using E_Commerce.CustomMiddleweare;
 using infrastructure.Context;
 using infrastructure.Mapper;
+using infrastructure.SignalR;
 using infrastructure.Repository;
+using infrastructure.SignalR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
+using Application.Interface.Reppo.NotificationRepo;
+using Application.Interface.Serv.Notifications;
 
 namespace FitCore_Manager
 {
@@ -44,9 +58,29 @@ namespace FitCore_Manager
             builder.Services.AddScoped<IUserWorkoutPlanRepository,UserWorkoutPlanRepository>();
             builder.Services.AddScoped<IUserWorkoutPlanService,UserWorkoutPlanService>();
 
+            builder.Services.AddScoped<IWorkoutPlanDayDetailsRepository,WorkoutPlanDayDetailsRepository>();
+            builder.Services.AddScoped<IWorkoutPlanDayDetailsService,WorkoutPlanDayDetailsService>();
+
+            //builder.Services.AddScoped<ITrainerBookingRepository,TrainerBookingRepository>();
+            //builder.Services.AddScoped<ITrainerBookingService,TrainerBookingService>();
+            builder.Services.AddScoped<ITrainerBookingRepository,TrainerBookingRepository>();
+            builder.Services.AddScoped<ITrainerBookingService,TrainerBookingService>();
+
+            builder.Services.AddScoped<ITrainerPunchRepository,TrainerPunchRepository>();
+            builder.Services.AddScoped<ITrainerPunchService,TrainerPunchService>();
+
+            builder.Services.AddScoped<IGymRatingRepository,GymRatingRepository>();
+            builder.Services.AddScoped<IGymRatingService, GymRatingService>();
+
+            builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
+            builder.Services.AddScoped<INotificationService, NotificationService>();
+
             builder.Services.AddScoped<ICloudinaryServices, CloudinaryService>();
 
             builder.Services.AddAutoMapper(typeof(ProfileMapper));
+
+            builder.Services.AddSignalR();
+
 
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
@@ -143,6 +177,7 @@ namespace FitCore_Manager
             app.UseAuthentication(); // Added for JWT
             app.UseAuthorization();
             app.UseMiddleware<UserIdMiddleware>();
+            app.MapHub<NotificationHub>("/notificationHub");
 
             app.MapControllers();
 

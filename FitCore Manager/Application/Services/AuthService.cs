@@ -207,14 +207,32 @@ namespace Application.Services
                 if (user == null)
                     return new ApiResponse<string>(false, "User not found", null, null);
 
-                user.UserName = !string.IsNullOrWhiteSpace(dto.UserName) ? dto.UserName : user.UserName;
-                user.Phone = !string.IsNullOrWhiteSpace(dto.Phone) ? dto.Phone : user.Phone;
+                bool isUpdated = false;
+
+                if (!string.IsNullOrWhiteSpace(dto.UserName) && dto.UserName != user.UserName)
+                {
+                    user.UserName = dto.UserName;
+                    isUpdated = true;
+                }
+
+                if (!string.IsNullOrWhiteSpace(dto.Phone) && dto.Phone != user.Phone)
+                {
+                    user.Phone = dto.Phone;
+                    isUpdated = true;
+                }
 
                 if (dto.ImageFile != null)
                 {
                     var imageUrl = await _cloudinaryServices.UploadImageAsync(dto.ImageFile);
-                    user.ImageUrl = imageUrl;
+                    if (!string.IsNullOrWhiteSpace(imageUrl))
+                    {
+                        user.ImageUrl = imageUrl;
+                        isUpdated = true;
+                    }
                 }
+
+                if (!isUpdated)
+                    return new ApiResponse<string>(false, "No fields to update", null, null);
 
                 await _userRepository.UpdateUser(user);
                 return new ApiResponse<string>(true, "Profile updated", "Done", null);
@@ -224,6 +242,7 @@ namespace Application.Services
                 return new ApiResponse<string>(false, "Update failed", null, ex.Message);
             }
         }
+
 
 
 

@@ -1,4 +1,5 @@
-﻿using FitCore_Manager.Model;
+﻿using Domain.Model;
+using FitCore_Manager.Model;
 using infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -43,5 +44,18 @@ namespace infrastructure.Repository
             _context.Users.Update(user);
             await _context.SaveChangesAsync();
         }
+
+        public async Task<UserMembership?> GetUserMembershipWithPlanAsync(int userId)
+        {
+            return await _context.UserMembership
+                .Include(um => um.MembershipPlans)
+                .FirstOrDefaultAsync(um =>
+                    um.UserId == userId &&
+                    um.IsActive &&
+                    um.StartDate <= DateTime.Now &&
+                    um.EndDate >= DateTime.Now
+                );
+        }
+
     }
 }

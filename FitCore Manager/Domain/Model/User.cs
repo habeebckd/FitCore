@@ -16,6 +16,12 @@ namespace FitCore_Manager.Model
         public DateTime CreatedAt { get; set; }
 
         public virtual UserMembership UserMembership { get; set; }
-        public virtual ICollection<UserWorkoutPlan> UserWorkoutPlans { get; set; }              
+        public virtual ICollection<UserWorkoutPlan> UserWorkoutPlans { get; set; }
+        public virtual ICollection<TrainerTimeSlot> TrainerBookings { get; set; } // As Trainer
+        //public virtual ICollection<TrainerTimeSlot> UserTrainerBookings { get; set; } // As User
+
+
+
+
     }
 }

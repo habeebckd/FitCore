@@ -11,7 +11,7 @@ namespace Application.Interface.Serv.Workout
 {
     public interface IUserWorkoutPlanService
     {
-        Task<ApiResponse<string>> AssignWorkoutPlan(int userId, string goal);
+        Task<ApiResponse<string>> AssignWorkoutPlan(int userId, int planId);
         Task<ApiResponse<ICollection<WorkoutPlan>>> AvailablePlans();
         Task<ApiResponse<ICollection<UserWorkoutPlanDto>>> GetAllUserPlans();
     }

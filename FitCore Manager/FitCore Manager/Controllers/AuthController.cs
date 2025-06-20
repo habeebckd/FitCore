@@ -52,10 +52,10 @@ namespace FitCore_Manager.Controllers
 
                 if (!isRegistered)
                 {
-                    return BadRequest(new ApiResponse<string>(false, "User already exists", null, null));
+                    return BadRequest(new ApiResponse<string>(false, "Trainer already exists", null, null));
                 }
 
-                return Ok(new ApiResponse<string>(true, "User registered successfully", "Done", null));
+                return Ok(new ApiResponse<string>(true, "Trainer registered successfully", "Done", null));
             }
             catch (Exception)
             {

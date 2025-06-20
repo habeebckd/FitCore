@@ -1,6 +1,7 @@
 ﻿using Application.Dto.MembershipPlan;
 using Application.Interface.Reppo.membership;
 using Application.Interface.Serv.membership;
+using Application.Interface.Serv.Notifications;
 using Domain.Model;
 using System;
 using System.Collections.Generic;
@@ -15,11 +16,13 @@ namespace Application.Services
     {
         private readonly IUserMembershipRepository _userMembershipRepository;
         private readonly IMembershipPlanRepository _planRepository;
+        private readonly INotificationService _notification;
 
-        public UserMembershipService( IUserMembershipRepository userMembershipRepository,IMembershipPlanRepository planRepository)
+        public UserMembershipService( IUserMembershipRepository userMembershipRepository,IMembershipPlanRepository planRepository,INotificationService notification)
         {
             _userMembershipRepository = userMembershipRepository;
             _planRepository = planRepository;
+            _notification = notification;
         }
 
 
@@ -33,6 +36,9 @@ namespace Application.Services
             if (plan == null)
                 throw new ArgumentException("Invalid plan selected.");
 
+            if (plan.Duration <= 0)
+                throw new InvalidOperationException("The selected plan has an invalid duration.");
+
             var membership = new UserMembership
             {
                 UserId = userId,
@@ -42,6 +48,9 @@ namespace Application.Services
                 IsActive = true
             };
             await _userMembershipRepository.AddUserMembershipAsync(membership);
+            var message = $"You have successfully subscribed to the {plan.PlanName}plan";
+            await _notification.NotifyUserAsync(userId, message);
+
             return true;
         }
 
@@ -67,6 +76,20 @@ namespace Application.Services
 
 
 
+
+
+        public async Task<bool> CancelSubscriptionAsync(int userId)
+        {
+            var membership = await _userMembershipRepository.GetActiveMembershipByUserIdAsync(userId);
+            if (membership == null)
+                throw new InvalidOperationException("No active membership found to cancel.");
+
+            membership.IsActive = false;
+            membership.EndDate = DateTime.UtcNow; // optionally end it immediately
+            await _userMembershipRepository.UpdateUserMembershipAsync(membership);
+
+            return true;
+        }
 
 
 

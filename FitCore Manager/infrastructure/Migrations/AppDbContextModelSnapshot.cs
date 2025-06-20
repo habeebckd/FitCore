@@ -22,6 +22,33 @@ namespace infrastructure.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("Domain.Model.Feedback", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Comment")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Rating")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("feedbacks");
+                });
+
             modelBuilder.Entity("Domain.Model.MembershipPlans", b =>
                 {
                     b.Property<int>("Id")
@@ -49,6 +76,103 @@ namespace infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("membershipPlans");
+                });
+
+            modelBuilder.Entity("Domain.Model.Notification", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Notifications");
+                });
+
+            modelBuilder.Entity("Domain.Model.TimeSlot", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<TimeOnly>("EndTime")
+                        .HasColumnType("time");
+
+                    b.Property<TimeOnly>("StartTime")
+                        .HasColumnType("time");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("TimeSlots");
+                });
+
+            modelBuilder.Entity("Domain.Model.TrainerTimeSlot", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("BookingDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("TimeSlotId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TrainerId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TimeSlotId");
+
+                    b.HasIndex("TrainerId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("TrainerTimeSlots");
+                });
+
+            modelBuilder.Entity("Domain.Model.TrainerTimeSlotAttendance", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime?>("PunchInTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("PunchOutTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("TrainerTimeSlotId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TrainerTimeSlotId");
+
+                    b.ToTable("TrainerTimeSlotAttendances");
                 });
 
             modelBuilder.Entity("Domain.Model.UserMembership", b =>
@@ -155,6 +279,38 @@ namespace infrastructure.Migrations
                     b.ToTable("workoutPlans");
                 });
 
+            modelBuilder.Entity("Domain.Model.WorkoutPlanDayDetails", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("DayNumber")
+                        .HasColumnType("int");
+
+                    b.Property<string>("DietPlan")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("WeekNumber")
+                        .HasColumnType("int");
+
+                    b.Property<string>("WorkoutDetails")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("WorkoutPlanId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("WorkoutPlanId", "WeekNumber", "DayNumber");
+
+                    b.ToTable("workoutPlanDayDetails");
+                });
+
             modelBuilder.Entity("FitCore_Manager.Model.User", b =>
                 {
                     b.Property<int>("UserId")
@@ -201,6 +357,54 @@ namespace infrastructure.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("Domain.Model.Feedback", b =>
+                {
+                    b.HasOne("FitCore_Manager.Model.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Domain.Model.TrainerTimeSlot", b =>
+                {
+                    b.HasOne("Domain.Model.TimeSlot", "TimeSlot")
+                        .WithMany("TrainerTimeSlots")
+                        .HasForeignKey("TimeSlotId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("FitCore_Manager.Model.User", "Trainer")
+                        .WithMany()
+                        .HasForeignKey("TrainerId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("FitCore_Manager.Model.User", "User")
+                        .WithMany("TrainerBookings")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("TimeSlot");
+
+                    b.Navigation("Trainer");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Domain.Model.TrainerTimeSlotAttendance", b =>
+                {
+                    b.HasOne("Domain.Model.TrainerTimeSlot", "TrainerTimeSlot")
+                        .WithMany()
+                        .HasForeignKey("TrainerTimeSlotId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("TrainerTimeSlot");
+                });
+
             modelBuilder.Entity("Domain.Model.UserMembership", b =>
                 {
                     b.HasOne("Domain.Model.MembershipPlans", "MembershipPlans")
@@ -239,18 +443,38 @@ namespace infrastructure.Migrations
                     b.Navigation("WorkoutPlan");
                 });
 
+            modelBuilder.Entity("Domain.Model.WorkoutPlanDayDetails", b =>
+                {
+                    b.HasOne("Domain.Model.WorkoutPlan", "WorkoutPlan")
+                        .WithMany("WorkoutPlanDayDetails")
+                        .HasForeignKey("WorkoutPlanId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("WorkoutPlan");
+                });
+
             modelBuilder.Entity("Domain.Model.MembershipPlans", b =>
                 {
                     b.Navigation("UserMembership");
                 });
 
+            modelBuilder.Entity("Domain.Model.TimeSlot", b =>
+                {
+                    b.Navigation("TrainerTimeSlots");
+                });
+
             modelBuilder.Entity("Domain.Model.WorkoutPlan", b =>
                 {
                     b.Navigation("UserWorkoutPlans");
+
+                    b.Navigation("WorkoutPlanDayDetails");
                 });
 
             modelBuilder.Entity("FitCore_Manager.Model.User", b =>
                 {
+                    b.Navigation("TrainerBookings");
+
                     b.Navigation("UserMembership")
                         .IsRequired();
 

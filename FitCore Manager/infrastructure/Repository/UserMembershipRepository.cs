@@ -27,5 +27,13 @@ namespace infrastructure.Repository
             await _context.SaveChangesAsync();
         }
 
+
+        public async Task UpdateUserMembershipAsync(UserMembership membership)
+        {
+            _context.UserMembership.Update(membership);
+            await _context.SaveChangesAsync();
+        }
+
+
     }
 }

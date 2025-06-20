@@ -21,6 +21,7 @@ namespace Domain.Model
 
 
         public ICollection<UserWorkoutPlan> UserWorkoutPlans {  get; set; }
+        public ICollection<WorkoutPlanDayDetails> WorkoutPlanDayDetails { get; set; }
 
     }
 }

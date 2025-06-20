@@ -22,35 +22,35 @@ namespace Application.Services
         }
 
 
-        public async Task<ApiResponse<string>> AssignWorkoutPlan(int userId, string goal)
+        public async Task<ApiResponse<string>> AssignWorkoutPlan(int userId, int planId)
+{
+    try
+    {
+        var plan = await _Repository.GetPlanById(planId);
+        if (plan == null)
+            return new ApiResponse<string>(false, "Invalid workout plan ID", null, null);
+
+        var existing = await _Repository.GetUserAssignedPlan(userId, planId);
+        if (existing != null)
+            return new ApiResponse<string>(false, "Workout plan already assigned to user", null, null);
+
+        var assignment = new UserWorkoutPlan
         {
-            try
-            {
-                var plan = await _Repository.GetPlanByGoal(goal);
-                if (plan == null)
-                    return new ApiResponse<string>(false, "No plan found for this goal", null, null);
+            UserId = userId,
+            WorkoutPlanId = planId,
+            AssignedDate = DateTime.Now,
+            IsCompleted = false,
+        };
 
-                var existing = await _Repository.GetUserAssignedPlan(userId, plan.Id);
-                if (existing != null)
-                    return new ApiResponse<string>(false, "Plan already assigned", null, null);
+        await _Repository.AddUserWorkoutPlan(assignment);
+        return new ApiResponse<string>(true, "Workout plan assigned successfully", "Done", null);
+    }
+    catch (Exception ex)
+    {
+        return new ApiResponse<string>(false, "Failed to assign workout plan", null, ex.Message);
+    }
+}
 
-                var assignment = new UserWorkoutPlan
-                {
-                    UserId = userId,
-                    WorkoutPlanId = plan.Id,
-                    AssignedDate = DateTime.Now,
-                    IsCompleted = false,
-                };
-                await _Repository.AddUserWorkoutPlan(assignment);
-                return new ApiResponse<string>(true, "Workout plan assigned successfully", "Done", null);
-            }
-
-
-            catch (Exception ex)
-            {
-                return new ApiResponse<string>(false, "Failed to assign workout plan", null, ex.Message);
-            }
-        }
 
 
 

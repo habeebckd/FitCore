@@ -20,10 +20,11 @@ namespace infrastructure.Repository
             _Context = context;
         }
 
-        public async Task<WorkoutPlan> GetPlanByGoal(string goal)
+        public async Task<WorkoutPlan> GetPlanById(int planId)
         {
-            return await _Context.workoutPlans.FirstOrDefaultAsync(a=>a.Goal.ToLower() == goal.ToLower());
+            return await _Context.workoutPlans.FirstOrDefaultAsync(p => p.Id == planId);
         }
+
 
         public async Task<UserWorkoutPlan> GetUserAssignedPlan(int userId, int planId)
         {

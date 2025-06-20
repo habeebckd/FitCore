@@ -120,7 +120,7 @@ namespace FitCore_Manager.Controllers
                 {
                     return NotFound(new ApiResponse<string>(false, "Plan not found.", null, null));
                 }
-                return Ok(new ApiResponse<string>(true, "Plan recived successfully.", null, null));
+                return Ok(new ApiResponse<string>(true, "Plan recived successfully.", plan.PlanName, null));
             }
             catch (Exception ex) 
             {

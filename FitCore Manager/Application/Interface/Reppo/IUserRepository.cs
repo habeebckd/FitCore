@@ -1,4 +1,5 @@
-﻿using FitCore_Manager.Model;
+﻿using Domain.Model;
+using FitCore_Manager.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,5 +15,7 @@ namespace infrastructure.Repository
         Task<List<User>> GetAllUsersAsync();
         Task<User> GetUserByIdAsync(int id);
         Task UpdateUser (User user);
+        Task<UserMembership?> GetUserMembershipWithPlanAsync(int userId);
+
     }
 }

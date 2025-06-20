@@ -62,5 +62,23 @@ namespace FitCore_Manager.Controllers
                 return StatusCode(500, new ApiResponse<string>(false, "Failed to retrieve membership.", null, ex.Message));
             }
         }
+
+
+        [HttpPost("cancel-subscription")]
+        public async Task<IActionResult> CancelSubscription()
+        {
+            int userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
+
+            try
+            {
+                var result = await _userService.CancelSubscriptionAsync(userId);
+                return Ok(new ApiResponse<bool>(true, "Subscription cancelled.", result,null));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ApiResponse<string>(false, ex.Message, null,null));
+            }
+        }
+
     }
 }

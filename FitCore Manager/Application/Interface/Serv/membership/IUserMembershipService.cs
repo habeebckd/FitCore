@@ -11,5 +11,7 @@ namespace Application.Interface.Serv.membership
     {
         Task<bool> SubscribeToPlanAsync(int userId, int planId);
         Task<UserMembershipDto> GetUserMembershipAsync(int userId);
+
+        Task<bool> CancelSubscriptionAsync(int userId);
     }
 }
