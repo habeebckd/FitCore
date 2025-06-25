@@ -1,4 +1,6 @@
-﻿using Domain.Model;
+﻿using Application.Dto;
+using Application.Dto.Traiiner;
+using Domain.Model;
 using FitCore_Manager.Model;
 using System;
 using System.Collections.Generic;
@@ -16,13 +18,24 @@ namespace Application.Interface.Reppo.Trainer
         Task AddBookingAsync(TrainerTimeSlot booking);
         Task<List<TrainerTimeSlot>> GetUserSessionsAsync(int userId);
 
-        Task AddTrainerSlotAsync(TrainerTimeSlot slot);
+        Task<bool> AddTraninerSlotAsync(TrainerTimeSlot slot);
         Task<List<TrainerTimeSlot>> GetAvailableSlotsAsync();
         Task SaveAsync();
         Task AddAsync(TimeSlot timeSlot);
 
         Task<List<User>> GetAllTrainersAsync();
 
+        Task<DateTime?> GetMembershipExpiryDateAsync(int userId);
+
+        Task<bool> HasExistingBookingAsync(int userId, int timeSlotId, DateTime bookingDate);
+
+        Task<bool> CanDeleteSlotAsync(int trainerId, int timeSlotId);
+
+        Task<bool> DeleteTrainerSlotAsync(int trainerId, int timeSlotId);
+
+        Task<bool> HasUserAlreadyBookedTrainerAsync(int userId, DateTime membershipEndDate);
+
+        Task<bool> DoesSlotExistAsync(int trainerId, int timeSlotId);
 
     }
 }

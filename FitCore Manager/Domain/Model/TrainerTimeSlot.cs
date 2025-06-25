@@ -13,7 +13,7 @@ namespace Domain.Model
 
         public int TrainerId { get; set; }
         public int TimeSlotId { get; set; }
-        public int? UserId { get; set; }
+        public int UserId { get; set; } = 0;
         public DateTime BookingDate { get; set; }
 
 

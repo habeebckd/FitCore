@@ -126,6 +126,10 @@ namespace infrastructure.Context
             modelBuilder.Entity<Feedback>()
                 .HasKey(x => x.Id);
 
+
+            modelBuilder.Entity<TrainerTimeSlot>()
+                .Property(x => x.UserId)
+                .HasDefaultValue(0);
         }
     }
 }

@@ -18,7 +18,7 @@ namespace FitCore_Manager.Controllers
             _service = service;
         }
 
-        [HttpPost("Book")]
+        [HttpPost("SlotBook")]
         public async Task<IActionResult> BookTrainer([FromBody] TrainerBookingRequestDto dto)
         {
             var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
@@ -38,7 +38,7 @@ namespace FitCore_Manager.Controllers
       
 
         [HttpPost("add-slot")]
-        //[Authorize(Roles ="Trainer")]
+        //[Authorize(Roles = "Trainer")]
         public async Task<IActionResult> AddSlot(CreateTrainerSlotDto dto)
         {
             var result = await _service.AddTraninerSlotAsync(dto);
@@ -51,6 +51,7 @@ namespace FitCore_Manager.Controllers
         //    var result = await _service.GetAvailableSlotsAsync();
         //    return result.IsSuccess ? Ok(result) : BadRequest(result);
         //}
+
         [HttpGet("available-slots")]
         public async Task<IActionResult> GetAvailableSlots()
         {
@@ -74,5 +75,16 @@ namespace FitCore_Manager.Controllers
             var result = await _service.GetAllTrainersAsync();
             return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
+
+
+        [HttpDelete("DeleteSlot")]
+        public async Task<IActionResult> DeleteSlot( int timeSlotId)
+        {
+            var trainerId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
+
+            var result = await _service.DeleteSlotByTrainerAsync(trainerId, timeSlotId);
+            return result.IsSuccess ? Ok(result) : BadRequest(result);
+        }
+
     }
 }

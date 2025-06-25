@@ -10,5 +10,12 @@ namespace Application.Dto.Traiiner
     {
         public TimeOnly StartTime { get; set; }
         public TimeOnly EndTime { get; set; }
+
+        public CreateTimeSlotDto()
+        {
+            var now = DateTime.Now.TimeOfDay;
+            StartTime = TimeOnly.FromTimeSpan(now);
+            EndTime = TimeOnly.FromTimeSpan(now.Add(TimeSpan.FromHours(1)));
+        }
     }
 }

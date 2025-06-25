@@ -19,5 +19,7 @@ namespace Application.Interface.Serv.Trainer
 
         Task<ApiResponse<List<TrainerDto>>> GetAllTrainersAsync();
 
+        Task<ApiResponse<string>> DeleteSlotByTrainerAsync(int trainerId, int timeSlotId);
+
     }
 }

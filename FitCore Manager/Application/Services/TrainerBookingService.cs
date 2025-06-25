@@ -25,16 +25,33 @@ namespace Application.Services
 
         public async Task<ApiResponse<string>> BookTrainerAsync(int userId, TrainerBookingRequestDto dto)
         {
+            // 1. Check if user is premium
             if (!await _repo.IsPremiumMemberAsync(userId))
                 return new ApiResponse<string>(false, "Only premium members can book trainers", null, null);
 
-            var availableTrainers = await _repo.GetAvailableTrainersAsync(dto.TimeSlotId, dto.BookingDate);
+            // 2. Check membership expiry
+            var membershipEndDate = await _repo.GetMembershipExpiryDateAsync(userId);
+            if (membershipEndDate == null)
+                return new ApiResponse<string>(false, "No active membership found", null, null);
 
+            if (dto.BookingDate.Date > membershipEndDate.Value.Date)
+                return new ApiResponse<string>(false, "Booking date exceeds membership expiry", null, null);
+
+            // ✅ 3. Ensure user has not already booked a trainer during this membership period
+            var alreadyBookedTrainer = await _repo.HasUserAlreadyBookedTrainerAsync(userId, membershipEndDate.Value);
+            if (alreadyBookedTrainer)
+                return new ApiResponse<string>(false, "You have already booked a trainer for your membership period", null, null);
+
+            // ✅ 4. Ensure the selected trainer is not already booked at this time slot on this date
+            var availableTrainers = await _repo.GetAvailableTrainersAsync(dto.TimeSlotId, dto.BookingDate);
             if (!availableTrainers.Any())
                 return new ApiResponse<string>(false, "No trainers available for this time slot", null, null);
 
-            var selectedTrainer = availableTrainers.First();
+            var selectedTrainer = availableTrainers.FirstOrDefault(t => t.UserId == dto.TrainerId);
+            if (selectedTrainer == null)
+                return new ApiResponse<string>(false, "Selected trainer is not available for this slot", null, null);
 
+            // 5. Book the trainer
             var booking = new TrainerTimeSlot
             {
                 BookingDate = dto.BookingDate,
@@ -71,15 +88,23 @@ namespace Application.Services
         {
             try
             {
+                // ✅ Step 1: Check if this slot already exists
+                var existing = await _repo.DoesSlotExistAsync(dto.TrainerId, dto.TimeSlotId);
+                if (existing)
+                {
+                    return new ApiResponse<string>(false, "This slot already exists for the trainer on the same date", null, null);
+                }
+
+                // ✅ Step 2: Add new slot
                 var slot = new TrainerTimeSlot
                 {
                     TrainerId = dto.TrainerId,
                     TimeSlotId = dto.TimeSlotId,
-                    BookingDate = dto.BookingDate.Date,
-                    UserId = null 
+                    //BookingDate = dto.BookingDate.Date,
+                    UserId = 0
                 };
 
-                await _repo.AddTrainerSlotAsync(slot);
+                await _repo.AddTraninerSlotAsync(slot);
                 await _repo.SaveAsync();
 
                 return new ApiResponse<string>(true, "Slot added", "Done", null);
@@ -89,6 +114,9 @@ namespace Application.Services
                 return new ApiResponse<string>(false, "Error", null, ex.Message);
             }
         }
+
+
+
 
         //public async Task<ApiResponse<List<AvailableSlotViewDto>>> GetAvailableSlotsAsync()
         //{
@@ -112,12 +140,14 @@ namespace Application.Services
                 //var result = _mapper.Map<List<AvailableSlotViewDto>>(slots);
                 var result = slots.Select(S => new AvailableSlotViewDto
                 {
-                    SlotId = S.Id,
+                    SlotId = S.TimeSlot.Id,
+                    TrainerId= S.Trainer != null ? S.Trainer.UserId :0,
                     TrainerName = S.Trainer != null ? S.Trainer.UserName : "Unknown",
-                    BookingDate = S.BookingDate,
+                    //BookingDate = S.BookingDate,
                     StartTime = S.TimeSlot != null ? S.TimeSlot.StartTime : TimeOnly.MinValue,
                     EndTime = S.TimeSlot != null ? S.TimeSlot.EndTime : TimeOnly.MinValue
                 }).ToList();
+                
                 return new ApiResponse<List<AvailableSlotViewDto>>(true, "Available slots", result, null);
             }
             catch (Exception ex)
@@ -157,5 +187,24 @@ namespace Application.Services
                 return new ApiResponse<List<TrainerDto>>(false, "Error", null, ex.Message);
             }
         }
+
+
+        public async Task<ApiResponse<string>> DeleteSlotByTrainerAsync(int trainerId, int timeSlotId)
+        {
+            var canDelete = await _repo.CanDeleteSlotAsync(trainerId, timeSlotId);
+
+            if (!canDelete)
+                return new ApiResponse<string>(false, "Cannot delete slot: booked by a premium member.", null, null);
+
+            var deleted = await _repo.DeleteTrainerSlotAsync(trainerId, timeSlotId);
+
+            if (!deleted)
+                return new ApiResponse<string>(false, "Slot not found or already deleted", null, null);
+
+            return new ApiResponse<string>(true, "Slot deleted successfully", "Deleted", null);
+        }
+
+
+
     }
 }
